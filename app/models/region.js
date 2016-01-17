@@ -3,19 +3,14 @@ import DS from 'ember-data';
 
 const {
   attr,
-  belongsTo
+  hasMany
 } = DS;
 
 export default Model.extend({
-  description: attr('string'),
-  accessibility: attr('string'),
+  name: attr('string'),
+  notes: attr('string'),
 
-  answer: attr('string'),
-
-  awesomeness: attr('number'),
-  risk: attr('number'),
-
-  region: belongsTo('region'),
+  destinations: hasMany('destination'),
 
   createdAt: attr('createDate'),
   updatedAt: attr('updateDate')

@@ -4,7 +4,9 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
-    // Add options here
+    fingerprint: {
+      replaceExtensions: ['html', 'css', 'js', 'json']
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated
@@ -22,6 +24,8 @@ module.exports = function(defaults) {
 
   var path = require('path');
   app.import({test: path.join(app.bowerDirectory, 'pouchdb/dist/pouchdb.memory.js')});
+
+  app.import('vendor/jquery.draggableNumber.js');
 
   return app.toTree();
 };

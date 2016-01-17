@@ -1,9 +1,13 @@
-<h2 id="title">Welcome to Ember</h2>
-
-<ul>
-{{#each model as |destination|}}
-  <li class='destination'><div class='description'>{{destination.description}}</div></li>
-{{/each}}
-</ul>
+<div class='row'>
+  <div class='small-12 columns'>
+    <div class='top-bar'>
+      <ul class='menu'>
+        <li class='pair'>{{link-to 'destinations' 'destinations'}} {{link-to '+' 'destinations.new' class='destinations new'}}</li>
+        <li class='pair'>{{link-to 'regions' 'regions'}} {{link-to '+' 'regions.new' class='regions new'}}</li>
+        <li>{{link-to 'sync' 'sync' class='sync'}}</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 {{outlet}}

@@ -1,0 +1,56 @@
+<div class='row'>
+  <div class='small-12 columns'>
+    <label>
+      Region
+      <select onchange={{action 'setRegion' value='target.value'}} class='region'>
+        {{#each regions as |region|}}
+          <option value={{region.id}} selected={{eq model.region.id region.id}}>{{region.name}}</option>
+        {{/each}}
+      </select>
+    </label>
+
+    <label>
+      Description
+      {{textarea value=model.description class='description' rows=4}}
+    </label>
+
+    <label>
+      Answer
+      {{input value=model.answer class='answer'}}
+    </label>
+
+    <label>
+      Accessibility
+      {{textarea value=model.accessibility class='accessibility'}}
+    </label>
+  </div>
+</div>
+<div class='row'>
+  <div class='small-6 columns'>
+    <label>
+      Awesomeness
+      {{#draggable-number}}
+        {{input value=model.awesomeness type='number' class='awesomeness' min=0 max=10 step=0.25}}
+      {{/draggable-number}}
+    </label>
+  </div>
+  <div class='small-6 columns'>
+    <label>
+      Risk
+      {{#draggable-number}}
+        {{input value=model.risk type='number' class='risk' min=0 max=10 step=0.25}}
+      {{/draggable-number}}
+    </label>
+  </div>
+</div>
+<div class='row'>
+  <div class='small-4 columns'>
+    <button {{action 'save' model}} class='save success button' type='button'>Save</button>
+  </div>
+  <div class='small-4 columns'>
+    <button {{action 'delete' model}} class='delete alert button' type='button'>Delete</button>
+  </div>
+  <div class='small-4 columns'>
+    <button {{action 'cancel' model}} class='cancel warning button' type='button'>Cancel</button>
+  </div>
+</div>

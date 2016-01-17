@@ -1,0 +1,26 @@
+@import 'foundation';
+@include foundation-everything;
+
+td {
+  vertical-align: top;
+}
+
+body.draglessness {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.top-bar ul li.pair {
+  a {
+    display: inline-block;
+  }
+
+  a:first-child {
+    padding-right: 0;
+  }
+
+  a:last-child {
+    padding-left: 0.35rem;
+  }
+}

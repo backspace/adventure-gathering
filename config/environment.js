@@ -21,6 +21,15 @@ module.exports = function(environment) {
     emberPouch: {
       localDb: 'adventure-gathering',
       options: {}
+    },
+
+    manifest: {
+      enabled: true,
+      appcacheFile: "/manifest.appcache",
+      excludePaths: ['index.html', 'someother.html'],
+      includePaths: ['/'],
+      network: ['*'],
+      showCreateDate: true
     }
   };
 
@@ -43,7 +52,7 @@ module.exports = function(environment) {
 
     ENV.APP.rootElement = '#ember-testing';
 
-    ENV.emberPouch.options = {adapter: 'memory'};
+    //ENV.emberPouch.options = {adapter: 'memory'};
   }
 
   if (environment === 'production') {
