@@ -10,6 +10,7 @@ import PageObject, {
   value,
   visitable
 } from 'ember-cli-page-object';
+import tinycolor from 'tinycolor2';
 
 const x = function(selector) {
   return {
@@ -38,7 +39,6 @@ const propertyColourName = function(property) {
     get() {
       const propertyColour = findElement(this).css(property);
 
-      /* globals tinycolor */
       const colour = tinycolor(propertyColour);
       return colour.toName();
     }
@@ -52,7 +52,6 @@ const propertyColourOpacity = function(property) {
     get() {
       const propertyColour = findElement(this).css(property);
 
-      /* globals tinycolor */
       const colour = tinycolor(propertyColour);
       return colour.getAlpha();
     }
