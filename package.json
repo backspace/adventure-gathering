@@ -68,6 +68,7 @@
     "ember-truth-helpers": "^2.1.0",
     "ember-web-app": "^3.0.1",
     "eslint-plugin-ember": "^5.2.0",
+    "jquery": "^3.6.3",
     "js-graph-algorithms": "^1.0.18",
     "json-stringify-safe": "^5.0.1",
     "loader.js": "^4.7.0",
