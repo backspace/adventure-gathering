@@ -4,6 +4,31 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
+    autoImport: {
+      alias: {
+        fs: 'pdfkit/js/virtual-fs.js',
+      },
+      webpack: {
+        node: {
+          stream: true,
+          zlib: true,
+        },
+        resolve: {
+          alias: {
+            fs: 'pdfkit/js/virtual-fs.js'
+          }
+        },
+        module: {
+          rules: [
+            { enforce: 'post', test: /fontkit[/\\]index.js$/, loader: "transform-loader?brfs" },
+            { enforce: 'post', test: /unicode-properties[/\\]index.js$/, loader: "transform-loader?brfs" },
+            { enforce: 'post', test: /linebreak[/\\]src[/\\]linebreaker.js/, loader: "transform-loader?brfs" },
+            { test: /src[/\\]assets/, loader: 'arraybuffer-loader'},
+            { test: /\.afm$/, loader: 'raw-loader'}
+          ]
+        },
+      },
+    },
     'ember-cli-babel': {
       includePolyfill: true,
     },

@@ -3,7 +3,7 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
-import stringify from 'npm:json-stringify-safe';
+import stringify from 'json-stringify-safe';
 
 import page from '../pages/sync';
 
