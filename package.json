@@ -27,7 +27,7 @@
     "broccoli-clean-css": "^1.1.0",
     "broccoli-manifest": "0.0.7",
     "ember-ajax": "^3.1.0",
-    "ember-auto-import": "^2.5.0",
+    "ember-auto-import": "^1.12.2",
     "ember-cli": "~3.4.4",
     "ember-cli-app-version": "^3.2.0",
     "ember-cli-babel": "^6.16.0",
