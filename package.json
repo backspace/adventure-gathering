@@ -77,6 +77,7 @@
     "maxrects-packer": "^2.0.0",
     "moment": "2.11.1",
     "moment-timezone": "0.5.0",
+    "node-sass": "^4.14.1",
     "nokia-font": "backspace/nokia-font#primary",
     "pdfkit": "^0.7.2",
     "qunit-dom": "^0.7.1"
@@ -88,6 +89,6 @@
     "broccoli-merge-trees": "^1.1.0"
   },
   "volta": {
-    "node": "8.17.0"
+    "node": "10.24.1"
   }
 }
