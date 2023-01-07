@@ -1,32 +1,30 @@
 import { run } from '@ember/runloop';
-import { test } from 'qunit';
+import { module, test } from 'qunit';
 
-import moduleForAcceptance from 'adventure-gathering/tests/helpers/module-for-acceptance';
+import { setupApplicationTest } from 'ember-qunit';
 
 import page from '../pages/settings';
 
-moduleForAcceptance('Acceptance | settings', {
-  beforeEach() {
+module('Acceptance | settings', function(hooks) {
+  setupApplicationTest(hooks);
+
+  hooks.beforeEach(function() {
     this.store = this.application.__container__.lookup('service:store');
-  }
-});
-
-test('a new settings document can be created and saved', function(assert) {
-  const done = assert.async();
-
-  page.visit();
-
-  andThen(() => {
-    assert.equal(page.goalField.value, '');
-    assert.notOk(page.destinationStatus.isChecked);
   });
 
-  page.goalField.fill('abc');
-  page.clandestineRendezvous.click();
-  page.txtbeyond.click();
-  page.save();
+  test('a new settings document can be created and saved', function(assert) {
+    const done = assert.async();
 
-  andThen(() => {
+    page.visit();
+
+    assert.equal(page.goalField.value, '');
+    assert.notOk(page.destinationStatus.isChecked);
+
+    page.goalField.fill('abc');
+    page.clandestineRendezvous.click();
+    page.txtbeyond.click();
+    page.save();
+
     this.store.findRecord('settings', 'settings').then(settings => {
       assert.equal(settings.get('goal'), 'abc');
       assert.ok(settings.get('clandestineRendezvous'));
@@ -36,8 +34,10 @@ test('a new settings document can be created and saved', function(assert) {
   });
 });
 
-moduleForAcceptance('Acceptance | settings', {
-  beforeEach(assert) {
+module('Acceptance | settings', function(hooks) {
+  setupApplicationTest(hooks);
+
+  hooks.beforeEach(function(assert) {
     this.store = this.application.__container__.lookup('service:store');
     const done = assert.async();
 
@@ -52,29 +52,25 @@ moduleForAcceptance('Acceptance | settings', {
         done();
       });
     });
-  }
-});
+  });
 
-test('an existing settings document is displayed and can be updated, with its boolean flags mirrored to the features service', function(assert) {
-  const done = assert.async();
+  test('an existing settings document is displayed and can be updated, with its boolean flags mirrored to the features service', function(assert) {
+    const done = assert.async();
 
-  page.visit();
+    page.visit();
 
-  andThen(() => {
     const featuresService = this.application.__container__.lookup('service:features');
     assert.ok(featuresService.get('destinationStatus'));
 
     assert.equal(page.goalField.value, '12345');
     assert.ok(page.destinationStatus.isChecked);
-  });
 
-  page.goalField.fill('789');
-  page.destinationStatus.click();
-  page.clandestineRendezvous.click();
-  page.txtbeyond.click();
-  page.save();
+    page.goalField.fill('789');
+    page.destinationStatus.click();
+    page.clandestineRendezvous.click();
+    page.txtbeyond.click();
+    page.save();
 
-  andThen(() => {
     this.store.findRecord('settings', 'settings').then(settings => {
       const featuresService = this.application.__container__.lookup('service:features');
       assert.notOk(featuresService.get('destinationStatus'));

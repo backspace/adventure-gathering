@@ -1,14 +1,16 @@
 import { run } from '@ember/runloop';
 
-import { test } from 'qunit';
-import moduleForAcceptance from 'adventure-gathering/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
+import { setupApplicationTest } from 'ember-qunit';
 
 import stringify from 'npm:json-stringify-safe';
 
 import page from '../pages/sync';
 
-moduleForAcceptance('Acceptance | sync', {
-  beforeEach(assert) {
+module('Acceptance | sync', function(hooks) {
+  setupApplicationTest(hooks);
+
+  hooks.beforeEach(function(assert) {
     const store = this.application.__container__.lookup('service:store');
     const done = assert.async();
 
@@ -21,19 +23,17 @@ moduleForAcceptance('Acceptance | sync', {
         done();
       });
     });
-  }
-});
+  });
 
-// I had these as separate tests but localStorage was bleeding through… ugh
-test('can sync with another database, syncs are remembered and can be returned to', function(assert) {
-  const done = assert.async();
+  // I had these as separate tests but localStorage was bleeding through… ugh
+  test('can sync with another database, syncs are remembered and can be returned to', async function(assert) {
+    const done = assert.async();
 
-  visit('/');
-  page.visit();
+    await visit('/');
+    page.visit();
 
-  page.enterDestination('sync-db').sync();
+    page.enterDestination('sync-db').sync();
 
-  andThen(() => {
     const syncController = this.application.__container__.lookup('controller:sync');
 
     syncController.get('syncPromise').then(() => {
@@ -50,19 +50,15 @@ test('can sync with another database, syncs are remembered and can be returned t
 
       page.enterDestination('other-sync').sync();
 
-      andThen(() => {
-        assert.equal(page.databases().count, 2);
-        assert.equal(page.databases(0).name, 'sync-db');
-        assert.equal(page.databases(1).name, 'other-sync');
-      });
+      assert.equal(page.databases().count, 2);
+      assert.equal(page.databases(0).name, 'sync-db');
+      assert.equal(page.databases(1).name, 'other-sync');
 
       page.databases(0).click();
 
-      andThen(() => {
-        assert.equal(page.destinationValue, 'sync-db');
+      assert.equal(page.destinationValue, 'sync-db');
 
-        done();
-      });
+      done();
     }).catch((error) => {
       assert.ok(false, 'expected no errors syncing');
 
