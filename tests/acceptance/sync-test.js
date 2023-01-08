@@ -1,3 +1,4 @@
+import { visit } from '@ember/test-helpers';
 import { run } from '@ember/runloop';
 
 import { module, test } from 'qunit';
