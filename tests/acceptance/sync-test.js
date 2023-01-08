@@ -12,7 +12,7 @@ module('Acceptance | sync', function(hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function(assert) {
-    const store = this.application.__container__.lookup('service:store');
+    const store = this.owner.lookup('service:store');
     const done = assert.async();
 
     run(() => {
@@ -35,7 +35,7 @@ module('Acceptance | sync', function(hooks) {
 
     page.enterDestination('sync-db').sync();
 
-    const syncController = this.application.__container__.lookup('controller:sync');
+    const syncController = this.owner.lookup('controller:sync');
 
     syncController.get('syncPromise').then(() => {
       assert.equal(page.push.read, '4');

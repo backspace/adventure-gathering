@@ -9,7 +9,7 @@ module('Acceptance | settings', function(hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function() {
-    this.store = this.application.__container__.lookup('service:store');
+    this.store = this.owner.lookup('service:store');
   });
 
   test('a new settings document can be created and saved', function(assert) {
@@ -38,7 +38,7 @@ module('Acceptance | settings', function(hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function(assert) {
-    this.store = this.application.__container__.lookup('service:store');
+    this.store = this.owner.lookup('service:store');
     const done = assert.async();
 
     run(() => {
@@ -59,7 +59,7 @@ module('Acceptance | settings', function(hooks) {
 
     page.visit();
 
-    const featuresService = this.application.__container__.lookup('service:features');
+    const featuresService = this.owner.lookup('service:features');
     assert.ok(featuresService.get('destinationStatus'));
 
     assert.equal(page.goalField.value, '12345');
@@ -72,7 +72,7 @@ module('Acceptance | settings', function(hooks) {
     page.save();
 
     this.store.findRecord('settings', 'settings').then(settings => {
-      const featuresService = this.application.__container__.lookup('service:features');
+      const featuresService = this.owner.lookup('service:features');
       assert.notOk(featuresService.get('destinationStatus'));
       assert.ok(featuresService.get('clandestineRendezvous'));
       assert.ok(featuresService.get('txtbeyond'));

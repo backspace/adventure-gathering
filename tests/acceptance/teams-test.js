@@ -9,7 +9,7 @@ module('Acceptance | teams', function(hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function(assert) {
-    const store = this.application.__container__.lookup('service:store');
+    const store = this.owner.lookup('service:store');
     const done = assert.async();
 
     run(() => {

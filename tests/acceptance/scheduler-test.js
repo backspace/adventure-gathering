@@ -10,8 +10,8 @@ module('Acceptance | scheduler', function(hooks) {
   setupApplicationTest(hooks);
 
   hooks.beforeEach(function(assert) {
-    const store = this.application.__container__.lookup('service:store');
-    const db = this.application.__container__.lookup('adapter:application').get('db');
+    const store = this.owner.lookup('service:store');
+    const db = this.owner.lookup('adapter:application').get('db');
     const done = assert.async();
 
     run(() => {
