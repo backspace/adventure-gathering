@@ -150,7 +150,7 @@ module('Acceptance | scheduler', function(hooks) {
 
   // This test ensures that a region’s destinations are serialised
   test('a newly created and available destination will show under its region', async function(assert) {
-    withSetting(this.owner, 'destination-status');
+    await withSetting(this.owner, 'destination-status');
     await destinationsPage.visit();
     await destinationsPage.new();
     await destinationsPage.descriptionField.fill('Fountain');

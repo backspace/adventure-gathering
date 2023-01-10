@@ -63,7 +63,7 @@ module('Acceptance | regions', function(hooks) {
   });
 
   test('regions have a completion status for txtbeyond', async function(assert) {
-    withSetting(this.owner, 'txtbeyond');
+    await withSetting(this.owner, 'txtbeyond');
     await page.visit();
 
     assert.ok(page.regions(0).isIncomplete, 'expected Gujaareh to be incomplete');
