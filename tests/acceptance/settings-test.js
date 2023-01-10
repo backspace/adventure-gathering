@@ -3,27 +3,30 @@ import { module, test } from 'qunit';
 
 import { setupApplicationTest } from 'ember-qunit';
 
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
+
 import page from '../pages/settings';
 
 module('Acceptance | settings', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function() {
     this.store = this.owner.lookup('service:store');
   });
 
-  test('a new settings document can be created and saved', function(assert) {
+  test('a new settings document can be created and saved', async function(assert) {
     const done = assert.async();
 
-    page.visit();
+    await page.visit();
 
     assert.equal(page.goalField.value, '');
     assert.notOk(page.destinationStatus.isChecked);
 
-    page.goalField.fill('abc');
-    page.clandestineRendezvous.click();
-    page.txtbeyond.click();
-    page.save();
+    await page.goalField.fill('abc');
+    await page.clandestineRendezvous.click();
+    await page.txtbeyond.click();
+    await page.save();
 
     this.store.findRecord('settings', 'settings').then(settings => {
       assert.equal(settings.get('goal'), 'abc');
@@ -54,10 +57,10 @@ module('Acceptance | settings', function(hooks) {
     });
   });
 
-  test('an existing settings document is displayed and can be updated, with its boolean flags mirrored to the features service', function(assert) {
+  test('an existing settings document is displayed and can be updated, with its boolean flags mirrored to the features service', async function(assert) {
     const done = assert.async();
 
-    page.visit();
+    await page.visit();
 
     const featuresService = this.owner.lookup('service:features');
     assert.ok(featuresService.get('destinationStatus'));
@@ -65,11 +68,11 @@ module('Acceptance | settings', function(hooks) {
     assert.equal(page.goalField.value, '12345');
     assert.ok(page.destinationStatus.isChecked);
 
-    page.goalField.fill('789');
-    page.destinationStatus.click();
-    page.clandestineRendezvous.click();
-    page.txtbeyond.click();
-    page.save();
+    await page.goalField.fill('789');
+    await page.destinationStatus.click();
+    await page.clandestineRendezvous.click();
+    await page.txtbeyond.click();
+    await page.save();
 
     this.store.findRecord('settings', 'settings').then(settings => {
       const featuresService = this.owner.lookup('service:features');

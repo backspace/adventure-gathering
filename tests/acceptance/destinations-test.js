@@ -3,11 +3,14 @@ import { all } from 'rsvp';
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
+import withSetting from '../helpers/with-setting';
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
 
 import page from '../pages/destinations';
 
 module('Acceptance | destinations', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     const store = this.owner.lookup('service:store');
@@ -51,7 +54,7 @@ module('Acceptance | destinations', function(hooks) {
     });
   });
 
-  test('existing destinations are listed and can be sorted by region or awesomeness', async assert => {
+  test('existing destinations are listed and can be sorted by region or awesomeness', async function(assert) {
     await visit('/destinations');
 
     assert.equal(page.destinations(0).description, 'Ina-Karekh');
@@ -64,89 +67,89 @@ module('Acceptance | destinations', function(hooks) {
     assert.equal(page.destinations(1).region, 'Here');
     assert.ok(page.destinations(1).isIncomplete);
 
-    page.headerRegion.click();
+    await page.headerRegion.click();
 
     assert.equal(page.destinations(0).description, 'Hona-Karekh');
     assert.equal(page.destinations(1).description, 'Ina-Karekh');
 
-    page.headerRegion.click();
+    await page.headerRegion.click();
 
     assert.equal(page.destinations(0).description, 'Ina-Karekh');
     assert.equal(page.destinations(1).description, 'Hona-Karekh');
 
-    page.headerAwesomeness.click();
+    await page.headerAwesomeness.click();
 
     assert.equal(page.destinations(0).description, 'Hona-Karekh');
   });
 
-  test('destination status doesn’t show when the feature flag is off', async assert => {
+  test('destination status doesn’t show when the feature flag is off', async function(assert) {
     await visit('/destinations');
 
     assert.ok(page.destinations(0).status.isHidden, 'expected the status to be hidden');
   });
 
-  test('destination status is displayed and can be toggled from the list when the feature flag is on', async assert => {
-    withSetting('destination-status');
+  test('destination status is displayed and can be toggled from the list when the feature flag is on', async function(assert) {
+    await withSetting(this.owner, 'destination-status');
     await visit('/destinations');
 
     // Sort by region, otherwise destinations will jump around
-    page.headerRegion.click();
+    await page.headerRegion.click();
 
     assert.equal(page.destinations(0).status.value, '✓');
     assert.equal(page.destinations(1).status.value, '✘');
 
-    page.destinations(0).status.click();
-    page.destinations(1).status.click();
+    await page.destinations(0).status.click();
+    await page.destinations(1).status.click();
 
     assert.equal(page.destinations(0).status.value, '✘');
     assert.equal(page.destinations(1).status.value, '?');
   });
 
-  test('a destination can be created and will appear at the top of the list', async assert => {
-    withSetting('clandestine-rendezvous');
+  test('a destination can be created and will appear at the top of the list', async function(assert) {
+    await withSetting(this.owner, 'clandestine-rendezvous');
     await visit('/destinations');
 
-    page.new();
-    page.descriptionField.fill('Bromarte');
-    page.answerField.fill('R0E0H0');
+    await page.new();
+    await page.descriptionField.fill('Bromarte');
+    await page.answerField.fill('R0E0H0');
 
     assert.equal(page.suggestedMaskButton.label, 'R_E_H_');
 
-    page.suggestedMaskButton.click();
+    await page.suggestedMaskButton.click();
 
     assert.equal(page.maskField.value, 'R_E_H_');
 
-    page.maskField.fill('R0E0H_');
+    await page.maskField.fill('R0E0H_');
 
-    page.save();
+    await page.save();
 
     assert.equal(page.destinations(0).description, 'Bromarte');
     assert.equal(page.destinations(0).mask, 'R0E0H_');
   });
 
-  test('the destination’s suggested mask is based on the adventure', async assert => {
-    withSetting('txtbeyond');
+  test('the destination’s suggested mask is based on the adventure', async function(assert) {
+    await withSetting(this.owner, 'txtbeyond');
     await visit('/destinations');
 
-    page.new();
-    page.answerField.fill('itchin snitchin witchin');
+    await page.new();
+    await page.answerField.fill('itchin snitchin witchin');
 
     assert.equal(page.suggestedMaskButton.label, 'itchin ________ witchin');
   });
 
-  test('the status fieldset doesn’t show when the feature isn’t on', async assert => {
+  test('the status fieldset doesn’t show when the feature isn’t on', async function(assert) {
     await visit('/destinations');
 
-    page.destinations(0).edit();
+    await page.destinations(0).edit();
 
     assert.ok(page.statusFieldset.isHidden, 'expected the status fieldset to be hidden');
   });
 
   test('a destination can be edited and edits can be cancelled', async function(assert) {
-    withSetting('destination-status');
+    await withSetting(this.owner, 'destination-status');
     await visit('/destinations');
 
-    page.destinations(0).edit();
+    await page.destinations(0).edit();
 
     assert.equal(page.descriptionField.value, 'Ina-Karekh');
     assert.equal(page.accessibilityField.value, 'You might need help');
@@ -155,13 +158,13 @@ module('Acceptance | destinations', function(hooks) {
     assert.equal(page.answerField.value, 'ABC123');
     assert.equal(page.regionField.text, 'There');
 
-    page.descriptionField.fill('Kisua');
-    page.accessibilityField.fill('You must cross the Empty Thousand!');
-    page.awesomenessField.fill(10);
-    page.riskField.fill(5);
-    page.answerField.fill('DEF456');
-    page.statusFieldset.availableOption.click();
-    page.save();
+    await page.descriptionField.fill('Kisua');
+    await page.accessibilityField.fill('You must cross the Empty Thousand!');
+    await page.awesomenessField.fill(10);
+    await page.riskField.fill(5);
+    await page.answerField.fill('DEF456');
+    await page.statusFieldset.availableOption.click();
+    await page.save();
 
     const destination = page.destinations(0);
     assert.equal(destination.description, 'Kisua');
@@ -169,36 +172,36 @@ module('Acceptance | destinations', function(hooks) {
     assert.equal(destination.status.value, '✓');
     assert.equal(destination.risk, '5');
 
-    page.destinations(0).edit();
+    await page.destinations(0).edit();
 
     assert.equal(page.accessibilityField.value, 'You must cross the Empty Thousand!');
     assert.equal(page.answerField.value, 'DEF456');
 
-    page.descriptionField.fill('Banbarra');
-    page.cancel();
+    await page.descriptionField.fill('Banbarra');
+    await page.cancel();
 
     assert.equal(page.destinations(0).description, 'Kisua');
   });
 
-  test('a new destination defaults to the same region as the previously-created one', function(assert) {
-    page.visit();
-    page.new();
-    page.descriptionField.fill('Borderlands');
+  test('a new destination defaults to the same region as the previously-created one', async function(assert) {
+    await page.visit();
+    await page.new();
+    await page.descriptionField.fill('Borderlands');
 
-    page.regionField.fillByText('There');
+    await page.regionField.fillByText('There');
 
-    page.save();
+    await page.save();
 
-    page.new();
+    await page.new();
 
     assert.equal(page.regionField.text, 'There');
   });
 
-  test('a destination can be deleted', (assert) => {
-    page.visit();
+  test('a destination can be deleted', async function (assert) {
+    await page.visit();
 
-    page.destinations(0).edit();
-    page.delete();
+    await page.destinations(0).edit();
+    await page.delete();
 
     assert.equal(page.destinations().count, 1);
   });

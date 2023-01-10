@@ -4,12 +4,15 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
+
 import stringify from 'json-stringify-safe';
 
 import page from '../pages/sync';
 
 module('Acceptance | sync', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     const store = this.owner.lookup('service:store');
@@ -31,13 +34,13 @@ module('Acceptance | sync', function(hooks) {
     const done = assert.async();
 
     await visit('/');
-    page.visit();
+    await page.visit();
 
-    page.enterDestination('sync-db').sync();
+    await page.enterDestination('sync-db').sync();
 
     const syncController = this.owner.lookup('controller:sync');
 
-    syncController.get('syncPromise').then(() => {
+    syncController.get('syncPromise').then(async () => {
       assert.equal(page.push.read, '4');
       assert.equal(page.push.written, '4');
       assert.equal(page.push.writeFailures, '0');
@@ -49,13 +52,13 @@ module('Acceptance | sync', function(hooks) {
 
       assert.equal(page.databases().count, 1);
 
-      page.enterDestination('other-sync').sync();
+      await page.enterDestination('other-sync').sync();
 
       assert.equal(page.databases().count, 2);
       assert.equal(page.databases(0).name, 'sync-db');
       assert.equal(page.databases(1).name, 'other-sync');
 
-      page.databases(0).click();
+      await page.databases(0).click();
 
       assert.equal(page.destinationValue, 'sync-db');
 

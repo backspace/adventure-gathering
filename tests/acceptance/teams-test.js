@@ -3,10 +3,13 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
+
 import page from '../pages/teams';
 
 module('Acceptance | teams', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     const store = this.owner.lookup('service:store');
@@ -39,8 +42,8 @@ module('Acceptance | teams', function(hooks) {
     });
   });
 
-  test('existing teams are listed', function(assert) {
-    page.visit();
+  test('existing teams are listed', async function(assert) {
+    await page.visit();
 
     assert.equal(page.teams().count, 2, 'expected two teams to be listed');
 
@@ -53,10 +56,10 @@ module('Acceptance | teams', function(hooks) {
     assert.equal(page.teams(1).phones, '2040000000: 4, 5140000000: 5');
   });
 
-  test('teams can be overwritten with JSON input', (assert) => {
-    page.visit();
+  test('teams can be overwritten with JSON input', async function(assert) {
+    await page.visit();
 
-    page.enterJSON(`
+    await page.enterJSON(`
       {
         "data": [
           {
@@ -84,7 +87,7 @@ module('Acceptance | teams', function(hooks) {
       }
     `);
 
-    page.save();
+    await page.save();
 
     assert.equal(page.teams().count, 2, 'expected two teams to be listed');
 

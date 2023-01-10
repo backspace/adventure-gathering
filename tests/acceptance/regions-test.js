@@ -3,12 +3,16 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
+import withSetting from '../helpers/with-setting';
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
+
 import page from '../pages/regions';
 import destinationsPage from '../pages/destinations';
 import mapPage from '../pages/map';
 
 module('Acceptance | regions', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     const store = this.owner.lookup('service:store');
@@ -45,8 +49,8 @@ module('Acceptance | regions', function(hooks) {
     });
   });
 
-  test('existing regions are listed', function(assert) {
-    page.visit();
+  test('existing regions are listed', async function(assert) {
+    await page.visit();
 
     assert.equal(page.regions().count, 2, 'expected two regions to be listed');
     assert.equal(page.regions(0).name, 'Gujaareh');
@@ -55,82 +59,82 @@ module('Acceptance | regions', function(hooks) {
     assert.notOk(page.regions(0).isIncomplete, 'expected Gujaareh not to be incomplete because this is not txtbeyond');
   });
 
-  test('regions have a completion status for txtbeyond', function(assert) {
-    withSetting('txtbeyond');
-    page.visit();
+  test('regions have a completion status for txtbeyond', async function(assert) {
+    withSetting(this.owner, 'txtbeyond');
+    await page.visit();
 
     assert.ok(page.regions(0).isIncomplete, 'expected Gujaareh to be incomplete');
     assert.notOk(page.regions(1).isIncomplete, 'expected Kisua to be complete');
   });
 
-  test('a region can be created, will appear at the top of the list, and be the default for a new destination', (assert) => {
-    page.visit();
+  test('a region can be created, will appear at the top of the list, and be the default for a new destination', async function(assert) {
+    await page.visit();
 
-    page.new();
-    page.nameField.fill('Jellevy');
-    page.save();
+    await page.new();
+    await page.nameField.fill('Jellevy');
+    await page.save();
 
     assert.equal(page.regions(0).name, 'Jellevy');
 
-    destinationsPage.visit();
-    destinationsPage.new();
+    await destinationsPage.visit();
+    await destinationsPage.new();
 
     // FIXME this is an unpleasant way to find the label of the selected value
     const id = destinationsPage.regionField.value;
     assert.equal(find(`option[value='${id}']`)[0].innerHTML, 'Jellevy');
   });
 
-  test('a region can be edited and edits can be cancelled', (assert) => {
-    page.visit();
+  test('a region can be edited and edits can be cancelled', async function(assert) {
+    await page.visit();
 
-    page.regions(0).edit();
+    await page.regions(0).edit();
 
     assert.equal(page.nameField.value, 'Gujaareh');
     assert.equal(page.notesField.value, 'City of Dreams');
 
-    page.nameField.fill('Occupied Gujaareh');
-    page.save();
+    await page.nameField.fill('Occupied Gujaareh');
+    await page.save();
 
     const region = page.regions(0);
     assert.equal(region.name, 'Occupied Gujaareh');
 
-    page.regions(0).edit();
-    page.nameField.fill('Gujaareh Protectorate');
-    page.cancel();
+    await page.regions(0).edit();
+    await page.nameField.fill('Gujaareh Protectorate');
+    await page.cancel();
 
     assert.equal(page.regions(0).name, 'Occupied Gujaareh');
   });
 
-  test('an edited region is the default for a new destination', (assert) => {
-    page.visit();
+  test('an edited region is the default for a new destination', async function(assert) {
+    await page.visit();
 
-    page.new();
-    page.nameField.fill('Jellevy');
-    page.save();
+    await page.new();
+    await page.nameField.fill('Jellevy');
+    await page.save();
 
-    page.regions(2).edit();
-    page.nameField.fill('Kisua Protectorate');
-    page.save();
+    await page.regions(2).edit();
+    await page.nameField.fill('Kisua Protectorate');
+    await page.save();
 
-    destinationsPage.visit();
-    destinationsPage.new();
+    await destinationsPage.visit();
+    await destinationsPage.new();
 
     // FIXME see above
     const id = destinationsPage.regionField.value;
     assert.equal(find(`option[value='${id}']`)[0].innerHTML, 'Kisua Protectorate');
   });
 
-  test('a region can be deleted', (assert) => {
-    page.visit();
-    page.regions(0).edit();
-    page.delete();
+  test('a region can be deleted', async function(assert) {
+    await page.visit();
+    await page.regions(0).edit();
+    await page.delete();
 
     assert.equal(page.regions().count, 1);
   });
 
-  test('the regions can be arranged on a map', (assert) => {
-    page.visit();
-    page.visitMap();
+  test('the regions can be arranged on a map', async function(assert) {
+    await page.visit();
+    await page.visitMap();
 
     assert.equal(mapPage.regions(0).name, 'Gujaareh');
     assert.equal(mapPage.regions(0).y, 10);
@@ -148,15 +152,15 @@ module('Acceptance | regions', function(hooks) {
 module('Acceptance | regions with no map', function(hooks) {
   setupApplicationTest(hooks);
 
-  test('a new map can be uploaded', (assert) => {
-    page.visit();
-    page.visitMap();
+  test('a new map can be uploaded', async function(assert) {
+    await page.visit();
+    await page.visitMap();
 
     // FIXME had to turn this off after the 2.18 update
     // assert.ok(mapPage.imageSrc() === '', 'expected no img src');
 
     // This has to happen inside andThen to change the file input
-    mapPage.setMap('R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==');
+    await mapPage.setMap('R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==');
 
     assert.ok(mapPage.imageSrc.indexOf('blob') > -1, 'expected new img src to have a blob URL');
   });
@@ -176,16 +180,16 @@ module('Acceptance | regions with existing map', function(hooks) {
     });
   });
 
-  test('an existing map is displayed and can be updated', (assert) => {
-    page.visit();
-    page.visitMap();
+  test('an existing map is displayed and can be updated', async function(assert) {
+    await page.visit();
+    await page.visitMap();
 
     let existingSrc, newSrc;
 
     existingSrc = mapPage.imageSrc;
     assert.ok(existingSrc.indexOf('blob') > -1, 'expected img src to have a blob URL');
 
-    mapPage.setMap('R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==');
+    await mapPage.setMap('R0lGODlhDwAPAKECAAAAzMzM/////wAAACwAAAAADwAPAAACIISPeQHsrZ5ModrLlN48CXF8m2iQ3YmmKqVlRtW4MLwWACH+H09wdGltaXplZCBieSBVbGVhZCBTbWFydFNhdmVyIQAAOw==');
     newSrc = mapPage.imageSrc;
     assert.ok(newSrc.indexOf('blob') > -1, 'expected new img src to have a blob URL');
     assert.ok(existingSrc !== newSrc, 'expected img src to have changed');

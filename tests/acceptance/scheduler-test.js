@@ -3,11 +3,15 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 
+import withSetting from '../helpers/with-setting';
+import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
+
 import page from '../pages/scheduler';
 import destinationsPage from '../pages/destinations';
 
 module('Acceptance | scheduler', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     const store = this.owner.lookup('service:store');
@@ -109,8 +113,8 @@ module('Acceptance | scheduler', function(hooks) {
     });
   });
 
-  test('available destinations are grouped by region', (assert) => {
-    page.visit();
+  test('available destinations are grouped by region', async function(assert) {
+    await page.visit();
 
     assert.equal(page.regions().count, 2, 'only regions with available destinations should be listed');
     const region = page.regions(1);
@@ -130,49 +134,49 @@ module('Acceptance | scheduler', function(hooks) {
     assert.equal(destination.riskBorderOpacity, 0.2);
   });
 
-  test('regions with available destinations are displayed on the map and highlight when hovered in the column', (assert) => {
-    page.visit();
+  test('regions with available destinations are displayed on the map and highlight when hovered in the column', async function(assert) {
+    await page.visit();
 
     const region = page.map.regions(1);
 
     assert.equal(region.x, 50);
     assert.equal(region.y, 60);
     assert.notOk(region.isHighlighted, 'expected region not to be highlighted');
-    page.regions(1).hover();
+    await page.regions(1).hover();
     assert.ok(region.isHighlighted, 'expected region to be highlighted');
-    page.regions(1).exit();
+    await page.regions(1).exit();
     assert.notOk(region.isHighlighted, 'expected region not to be highlighted');
   });
 
   // This test ensures that a region’s destinations are serialised
-  test('a newly created and available destination will show under its region', (assert) => {
-    withSetting('destination-status');
-    destinationsPage.visit();
-    destinationsPage.new();
-    destinationsPage.descriptionField.fill('Fountain');
+  test('a newly created and available destination will show under its region', async function(assert) {
+    withSetting(this.owner, 'destination-status');
+    await destinationsPage.visit();
+    await destinationsPage.new();
+    await destinationsPage.descriptionField.fill('Fountain');
 
     const portagePlaceOption = find('option:contains(Portage Place)');
-    destinationsPage.regionField.select(portagePlaceOption.val());
+    await destinationsPage.regionField.select(portagePlaceOption.val());
 
-    destinationsPage.save();
+    await destinationsPage.save();
 
-    destinationsPage.destinations(0).status.click();
+    await destinationsPage.destinations(0).status.click();
 
-    page.visit();
+    await page.visit();
 
     const region = page.regions(1);
     assert.equal(region.destinations().count, 3);
   });
 
-  test('a destination with a meeting is indicated', (assert) => {
-    destinationsPage.visit();
+  test('a destination with a meeting is indicated', async function(assert) {
+    await destinationsPage.visit();
 
     assert.ok(destinationsPage.destinations(0).hasMeetings, 'expected the first destination to have meetings');
     assert.notOk(destinationsPage.destinations(1).hasMeetings, 'expected the second destination not to have meetings');
   });
 
-  test('teams are listed', (assert) => {
-    page.visit();
+  test('teams are listed', async function(assert) {
+    await page.visit();
 
     const superfans = page.teams(0);
     assert.equal(superfans.name, 'Leave It to Beaver superfans');
@@ -185,8 +189,8 @@ module('Acceptance | scheduler', function(hooks) {
     assert.notOk(page.teams(2).isAhead, 'expected team with no meeting not to be ahead');
   });
 
-  test('an existing meeting is shown in the teams and destination', (assert) => {
-    page.visit();
+  test('an existing meeting is shown in the teams and destination', async function(assert) {
+    await page.visit();
 
     assert.equal(page.teams(0).count, '•');
     assert.equal(page.teams(0).averageAwesomeness, '3');
@@ -201,10 +205,10 @@ module('Acceptance | scheduler', function(hooks) {
     assert.equal(page.regions(1).destinations(0).meetingCountBorderWidth, '2px');
   });
 
-  test('hovering over a team shows its destinations ordered on the map, its meetings, and teams it’s met', (assert) => {
-    page.visit();
+  test('hovering over a team shows its destinations ordered on the map, its meetings, and teams it’s met', async function(assert) {
+    await page.visit();
 
-    page.teams(0).hover();
+    await page.teams(0).hover();
     assert.equal(page.map.regions(1).meetingIndex, '1');
 
     assert.equal(page.teams(0).meetings().count, 1);
@@ -215,22 +219,22 @@ module('Acceptance | scheduler', function(hooks) {
     assert.notOk(page.teams(2).isHighlighted, 'expected the other team to not be highlighted');
   });
 
-  test('an existing meeting can be edited', assert => {
-    page.visit();
+  test('an existing meeting can be edited', async function(assert) {
+    await page.visit();
 
-    page.teams(0).hover();
-    page.teams(0).meetings(0).click();
+    await page.teams(0).hover();
+    await page.teams(0).meetings(0).click();
     assert.equal(page.meeting.destination, 'Edmonton Court');
     assert.equal(page.meeting.teams(0).value, 'Leave It to Beaver superfans');
     assert.equal(page.meeting.teams(1).value, 'Mayors');
   });
 
-  test('a new meeting can be scheduled and resets the form when saved', (assert) => {
-    page.visit();
+  test('a new meeting can be scheduled and resets the form when saved', async function(assert) {
+    await page.visit();
 
-    page.regions(1).destinations(1).click();
-    page.teams(1).click();
-    page.teams(0).click();
+    await page.regions(1).destinations(1).click();
+    await page.teams(1).click();
+    await page.teams(0).click();
 
     assert.equal(page.meeting.destination, 'Prairie Theatre Exchange');
     assert.equal(page.meeting.teams(0).value, 'Leave It to Beaver superfans');
@@ -247,8 +251,8 @@ module('Acceptance | scheduler', function(hooks) {
     assert.ok(page.teams(1).isSelected);
     assert.ok(page.teams(0).isSelected);
 
-    page.meeting.fillOffset('18');
-    page.meeting.save();
+    await page.meeting.fillOffset('18');
+    await page.meeting.save();
 
     assert.equal(page.teams(0).count, '••');
     assert.equal(page.teams(0).averageAwesomeness, '2.17');
@@ -260,31 +264,31 @@ module('Acceptance | scheduler', function(hooks) {
 
     assert.equal(page.meeting.teams().count, 0, 'expected no set teams after saving');
 
-    page.regions(0).destinations(0).click();
-    page.teams(1).click();
-    page.teams(0).click();
+    await page.regions(0).destinations(0).click();
+    await page.teams(1).click();
+    await page.teams(0).click();
 
     assert.equal(page.meeting.offset, '23');
   });
 
-  test('scheduling a meeting between teams with different meeting counts is impossible', (assert) => {
-    page.visit();
+  test('scheduling a meeting between teams with different meeting counts is impossible', async function(assert) {
+    await page.visit();
 
-    page.regions(1).destinations(1).click();
-    page.teams(1).click();
-    page.teams(2).click();
+    await page.regions(1).destinations(1).click();
+    await page.teams(1).click();
+    await page.teams(2).click();
 
     assert.ok(page.meeting.isForbidden, 'expected meeting to be forbidden');
     assert.ok(page.meeting.saveIsHidden, 'expected save button to be hidden');
   });
 
-  test('a partially-complete meeting can be cleared', (assert) => {
-    page.visit();
+  test('a partially-complete meeting can be cleared', async function(assert) {
+    await page.visit();
 
-    page.teams(1).click();
-    page.teams(0).click();
+    await page.teams(1).click();
+    await page.teams(0).click();
 
-    page.meeting.reset();
+    await page.meeting.reset();
 
     assert.equal(page.meeting.teams().count, 0);
   });
