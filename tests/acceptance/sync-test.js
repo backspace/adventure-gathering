@@ -50,15 +50,15 @@ module('Acceptance | sync', function(hooks) {
       //assert.equal(page.pull().written(), '0');
       assert.equal(page.pull.writeFailures, '0');
 
-      assert.equal(page.databases().count, 1);
+      assert.equal(page.databases.length, 1);
 
       await page.enterDestination('other-sync').sync();
 
-      assert.equal(page.databases().count, 2);
-      assert.equal(page.databases(0).name, 'sync-db');
-      assert.equal(page.databases(1).name, 'other-sync');
+      assert.equal(page.databases.length, 2);
+      assert.equal(page.databases[0].name, 'sync-db');
+      assert.equal(page.databases[1].name, 'other-sync');
 
-      await page.databases(0).click();
+      await page.databases[0].click();
 
       assert.equal(page.destinationValue, 'sync-db');
 

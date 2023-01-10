@@ -55,19 +55,19 @@ module('Acceptance | regions', function(hooks) {
   test('existing regions are listed', async function(assert) {
     await page.visit();
 
-    assert.equal(page.regions().count, 2, 'expected two regions to be listed');
-    assert.equal(page.regions(0).name, 'Gujaareh');
-    assert.equal(page.regions(1).name, 'Kisua');
+    assert.equal(page.regions.length, 2, 'expected two regions to be listed');
+    assert.equal(page.regions[0].name, 'Gujaareh');
+    assert.equal(page.regions[1].name, 'Kisua');
 
-    assert.notOk(page.regions(0).isIncomplete, 'expected Gujaareh not to be incomplete because this is not txtbeyond');
+    assert.notOk(page.regions[0].isIncomplete, 'expected Gujaareh not to be incomplete because this is not txtbeyond');
   });
 
   test('regions have a completion status for txtbeyond', async function(assert) {
     await withSetting(this.owner, 'txtbeyond');
     await page.visit();
 
-    assert.ok(page.regions(0).isIncomplete, 'expected Gujaareh to be incomplete');
-    assert.notOk(page.regions(1).isIncomplete, 'expected Kisua to be complete');
+    assert.ok(page.regions[0].isIncomplete, 'expected Gujaareh to be incomplete');
+    assert.notOk(page.regions[1].isIncomplete, 'expected Kisua to be complete');
   });
 
   test('a region can be created, will appear at the top of the list, and be the default for a new destination', async function(assert) {
@@ -77,7 +77,7 @@ module('Acceptance | regions', function(hooks) {
     await page.nameField.fill('Jellevy');
     await page.save();
 
-    assert.equal(page.regions(0).name, 'Jellevy');
+    assert.equal(page.regions[0].name, 'Jellevy');
 
     await destinationsPage.visit();
     await destinationsPage.new();
@@ -90,7 +90,7 @@ module('Acceptance | regions', function(hooks) {
   test('a region can be edited and edits can be cancelled', async function(assert) {
     await page.visit();
 
-    await page.regions(0).edit();
+    await page.regions[0].edit();
 
     assert.equal(page.nameField.value, 'Gujaareh');
     assert.equal(page.notesField.value, 'City of Dreams');
@@ -98,14 +98,14 @@ module('Acceptance | regions', function(hooks) {
     await page.nameField.fill('Occupied Gujaareh');
     await page.save();
 
-    const region = page.regions(0);
+    const region = page.regions[0];
     assert.equal(region.name, 'Occupied Gujaareh');
 
-    await page.regions(0).edit();
+    await page.regions[0].edit();
     await page.nameField.fill('Gujaareh Protectorate');
     await page.cancel();
 
-    assert.equal(page.regions(0).name, 'Occupied Gujaareh');
+    assert.equal(page.regions[0].name, 'Occupied Gujaareh');
   });
 
   test('an edited region is the default for a new destination', async function(assert) {
@@ -115,7 +115,7 @@ module('Acceptance | regions', function(hooks) {
     await page.nameField.fill('Jellevy');
     await page.save();
 
-    await page.regions(2).edit();
+    await page.regions[2].edit();
     await page.nameField.fill('Kisua Protectorate');
     await page.save();
 
@@ -129,26 +129,26 @@ module('Acceptance | regions', function(hooks) {
 
   test('a region can be deleted', async function(assert) {
     await page.visit();
-    await page.regions(0).edit();
+    await page.regions[0].edit();
     await page.delete();
 
-    assert.equal(page.regions().count, 1);
+    assert.equal(page.regions.length, 1);
   });
 
   test('the regions can be arranged on a map', async function(assert) {
     await page.visit();
     await page.visitMap();
 
-    assert.equal(mapPage.regions(0).name, 'Gujaareh');
-    assert.equal(mapPage.regions(0).y, 10);
-    assert.equal(mapPage.regions(0).x, 50);
+    assert.equal(mapPage.regions[0].name, 'Gujaareh');
+    assert.equal(mapPage.regions[0].y, 10);
+    assert.equal(mapPage.regions[0].x, 50);
 
-    assert.equal(mapPage.regions(1).name, 'Kisua');
-    assert.equal(mapPage.regions(1).y, 1000);
-    assert.equal(mapPage.regions(1).x, 0);
+    assert.equal(mapPage.regions[1].name, 'Kisua');
+    assert.equal(mapPage.regions[1].y, 1000);
+    assert.equal(mapPage.regions[1].x, 0);
 
     // This needs to be inside andThen to get offset?!
-    // mapPage.regions(0).dragBy(90, 10);
+    // mapPage.regions[0].dragBy(90, 10);
   });
 });
 
