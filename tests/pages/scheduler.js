@@ -7,6 +7,7 @@ import PageObject, {
   hasClass,
   isHidden,
   text,
+  triggerable,
   value,
   visitable
 } from 'ember-cli-page-object';
@@ -85,26 +86,6 @@ const selectText = function(selector) {
   };
 }
 
-const hoverable = function(selector) {
-  return {
-    isDescriptor: true,
-
-    value() {
-      findElement(this, selector).trigger({type: 'mouseenter'});
-    }
-  };
-}
-
-const exitable = function(selector) {
-  return {
-    isDescriptor: true,
-
-    value() {
-      findElement(this, selector).trigger({type: 'mouseleave'});
-    }
-  };
-}
-
 export default PageObject.create({
   visit: visitable('/scheduler'),
 
@@ -112,8 +93,8 @@ export default PageObject.create({
     name: text('.name'),
     notes: attribute('title'),
 
-    hover: hoverable(),
-    exit: exitable(),
+    hover: triggerable('mouseenter'),
+    exit: triggerable('mouseleave'),
 
     destinations: collection('.destination', {
       description: text('.description'),
@@ -144,7 +125,7 @@ export default PageObject.create({
     isAhead: hasClass('ahead'),
 
     click: clickable('.name'),
-    hover: hoverable(),
+    hover: triggerable('mouseover', '.name'),
 
     meetings: collection('.meeting', {
       click: clickable(),
