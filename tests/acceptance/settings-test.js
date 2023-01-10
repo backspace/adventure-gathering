@@ -39,6 +39,7 @@ module('Acceptance | settings', function(hooks) {
 
 module('Acceptance | settings', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function(assert) {
     this.store = this.owner.lookup('service:store');

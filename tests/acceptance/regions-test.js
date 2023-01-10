@@ -152,6 +152,7 @@ module('Acceptance | regions', function(hooks) {
 
 module('Acceptance | regions with no map', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   test('a new map can be uploaded', async function(assert) {
     await page.visit();
@@ -169,6 +170,7 @@ module('Acceptance | regions with no map', function(hooks) {
 
 module('Acceptance | regions with existing map', function(hooks) {
   setupApplicationTest(hooks);
+  clearDatabase(hooks);
 
   hooks.beforeEach(function() {
     const db = this.owner.lookup('adapter:application').get('db');
