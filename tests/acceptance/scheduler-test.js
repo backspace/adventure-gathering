@@ -2,6 +2,7 @@ import { all } from 'rsvp';
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
+import { find } from '@ember/test-helpers';
 
 import withSetting from '../helpers/with-setting';
 import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
@@ -155,8 +156,8 @@ module('Acceptance | scheduler', function(hooks) {
     await destinationsPage.new();
     await destinationsPage.descriptionField.fill('Fountain');
 
-    const portagePlaceOption = find('option:contains(Portage Place)');
-    await destinationsPage.regionField.select(portagePlaceOption.val());
+    const portagePlaceOption = find(`option[data-test-region-name="Portage Place"]`);
+    await destinationsPage.regionField.select(portagePlaceOption.value);
 
     await destinationsPage.save();
 
