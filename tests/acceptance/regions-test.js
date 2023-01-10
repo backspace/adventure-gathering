@@ -2,6 +2,7 @@ import { all, Promise as EmberPromise } from 'rsvp';
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
+import { find } from '@ember/test-helpers';
 
 import withSetting from '../helpers/with-setting';
 import clearDatabase from 'adventure-gathering/tests/helpers/clear-database';
@@ -81,7 +82,7 @@ module('Acceptance | regions', function(hooks) {
 
     // FIXME this is an unpleasant way to find the label of the selected value
     const id = destinationsPage.regionField.value;
-    assert.equal(find(`option[value='${id}']`)[0].innerHTML, 'Jellevy');
+    assert.equal(find(`option[value='${id}']`).innerHTML, 'Jellevy');
   });
 
   test('a region can be edited and edits can be cancelled', async function(assert) {
@@ -121,7 +122,7 @@ module('Acceptance | regions', function(hooks) {
 
     // FIXME see above
     const id = destinationsPage.regionField.value;
-    assert.equal(find(`option[value='${id}']`)[0].innerHTML, 'Kisua Protectorate');
+    assert.equal(find(`option[value='${id}']`).innerHTML, 'Kisua Protectorate');
   });
 
   test('a region can be deleted', async function(assert) {
